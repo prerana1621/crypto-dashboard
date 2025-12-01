@@ -84,15 +84,6 @@ export default function Home() {
   return (
     // ADDED: min-h-screen and dark background colors
     <div className="min-h-screen p-10 font-sans transition-colors duration-300 bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100">
-      
-      {/* THEME TOGGLE BUTTON */}
-      <button 
-        onClick={toggleTheme}
-        className="fixed top-6 right-6 p-3 rounded-full bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 hover:scale-110 transition z-50 text-2xl"
-        title="Toggle Dark Mode"
-      >
-        {darkMode ? '🌙' : '☀️'}
-      </button>
 
       <div className="max-w-5xl mx-auto">
         <h1 className="text-4xl font-extrabold mb-2 text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
