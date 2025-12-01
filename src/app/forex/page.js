@@ -2,12 +2,10 @@
 import { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
-// --- FOREX DATA ---
-// We classify pairs to know the math logic (is USD the base or the quote?)
 const INITIAL_FOREX = [
-  { id: 'eurusd', pair: 'EUR/USD', price: 1.08, flag: '🇪🇺', type: 'direct' }, // 1 EUR = 1.08 USD
+  { id: 'eurusd', pair: 'EUR/USD', price: 1.08, flag: '🇪🇺', type: 'direct' },
   { id: 'gbpusd', pair: 'GBP/USD', price: 1.26, flag: '🇬🇧', type: 'direct' },
-  { id: 'usdjpy', pair: 'USD/JPY', price: 150.5, flag: '🇯🇵', type: 'inverse' }, // 1 USD = 150.5 JPY
+  { id: 'usdjpy', pair: 'USD/JPY', price: 150.5, flag: '🇯🇵', type: 'inverse' },
   { id: 'usdinr', pair: 'USD/INR', price: 83.12, flag: '🇮🇳', type: 'inverse' },
   { id: 'audusd', pair: 'AUD/USD', price: 0.65, flag: '🇦🇺', type: 'direct' },
   { id: 'usdcad', pair: 'USD/CAD', price: 1.35, flag: '🇨🇦', type: 'inverse' },
@@ -21,13 +19,31 @@ export default function Forex() {
   const [rates, setRates] = useState(INITIAL_FOREX);
   const [isDark, setIsDark] = useState(false);
 
-  // Converter State
-  const [amount, setAmount] = useState(1);
+  const [amount, setAmount] = useState("1"); 
   const [fromCur, setFromCur] = useState('USD');
   const [toCur, setToCur] = useState('INR');
   const [result, setResult] = useState(0);
 
-  // 1. Theme Listener
+  // --- SMART SWAP LOGIC ---
+  const handleFromChange = (e) => {
+    const newFrom = e.target.value;
+    // If user selects the same currency as the "To" side, swap them!
+    if (newFrom === toCur) {
+      setToCur(fromCur); // Set "To" to the OLD "From" value
+    }
+    setFromCur(newFrom);
+  };
+
+  const handleToChange = (e) => {
+    const newTo = e.target.value;
+    // If user selects the same currency as the "From" side, swap them!
+    if (newTo === fromCur) {
+      setFromCur(toCur); // Set "From" to the OLD "To" value
+    }
+    setToCur(newTo);
+  };
+
+  // Theme Listener
   useEffect(() => {
     const checkTheme = () => setIsDark(document.documentElement.classList.contains('dark'));
     checkTheme();
@@ -36,7 +52,7 @@ export default function Forex() {
     return () => observer.disconnect();
   }, []);
 
-  // 2. Simulator (Updates Prices)
+  // Simulator
   useEffect(() => {
     const interval = setInterval(() => {
       setRates(current => 
@@ -49,25 +65,22 @@ export default function Forex() {
     return () => clearInterval(interval);
   }, []);
 
-  // 3. Conversion Logic (Runs whenever rates, amount, or selection changes)
+  // Conversion Logic
   useEffect(() => {
     const convert = () => {
-      // Helper to get USD rate for any currency
       const getToUSDRate = (code) => {
         if (code === 'USD') return 1;
         const pair = rates.find(r => r.pair.includes(code));
         if (!pair) return 1;
-        // If EUR/USD (Direct): Price is 1.08. So 1 EUR = 1.08 USD.
         if (pair.type === 'direct') return pair.price;
-        // If USD/INR (Inverse): Price is 83. So 1 INR = 1/83 USD.
         return 1 / pair.price;
       };
 
-      const fromRate = getToUSDRate(fromCur); // Value in USD
-      const toRate = getToUSDRate(toCur);     // Value in USD
+      const fromRate = getToUSDRate(fromCur);
+      const toRate = getToUSDRate(toCur);
 
-      // Math: (Amount * From_Value_In_USD) / To_Value_In_USD
-      const valInUSD = amount * fromRate;
+      const safeAmount = parseFloat(amount) || 0;
+      const valInUSD = safeAmount * fromRate;
       const finalVal = valInUSD / toRate;
       
       setResult(finalVal);
@@ -80,7 +93,7 @@ export default function Forex() {
     <div className="p-8 max-w-6xl mx-auto font-sans">
       <h1 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">Global Forex Markets 🌍</h1>
 
-      {/* --- NEW: CONVERTER TOOL --- */}
+      {/* CONVERTER TOOL */}
       <div className="mb-8 p-6 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl shadow-lg text-white">
         <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
           💱 Quick Converter
@@ -92,29 +105,39 @@ export default function Forex() {
             <input 
               type="number" 
               value={amount}
-              onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
+              onChange={(e) => setAmount(e.target.value)}
               className="w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50"
             />
           </div>
 
           <div className="flex-1 w-full">
             <label className="block text-xs uppercase opacity-80 mb-1">From</label>
+            {/* UPDATED: Uses handleFromChange */}
             <select 
               value={fromCur}
-              onChange={(e) => setFromCur(e.target.value)}
+              onChange={handleFromChange}
               className="w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white focus:outline-none [&>option]:text-black"
             >
               {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
 
-          <div className="text-2xl pb-2 opacity-80">➔</div>
+          <div className="text-2xl pb-2 opacity-80 cursor-pointer hover:scale-110 transition" 
+               // Bonus: Clicking the arrow manually swaps them too!
+               onClick={() => {
+                 const temp = fromCur;
+                 setFromCur(toCur);
+                 setToCur(temp);
+               }}>
+            ➔
+          </div>
 
           <div className="flex-1 w-full">
             <label className="block text-xs uppercase opacity-80 mb-1">To</label>
+            {/* UPDATED: Uses handleToChange */}
             <select 
               value={toCur}
-              onChange={(e) => setToCur(e.target.value)}
+              onChange={handleToChange}
               className="w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white focus:outline-none [&>option]:text-black"
             >
               {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
