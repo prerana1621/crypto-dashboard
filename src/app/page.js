@@ -1,186 +1,209 @@
 "use client";
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { BarChart, Bar, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
-const INITIAL_DATA = [
-  { id: 'bitcoin', symbol: 'btc', name: 'Bitcoin', current_price: 64230.50, price_change_percentage_24h: 1.2, image: 'https://assets.coincap.io/assets/icons/btc@2x.png' },
-  { id: 'ethereum', symbol: 'eth', name: 'Ethereum', current_price: 3450.12, price_change_percentage_24h: -0.5, image: 'https://assets.coincap.io/assets/icons/eth@2x.png' },
-  { id: 'tether', symbol: 'usdt', name: 'Tether', current_price: 1.00, price_change_percentage_24h: 0.01, image: 'https://assets.coincap.io/assets/icons/usdt@2x.png' },
-  { id: 'bnb', symbol: 'bnb', name: 'BNB', current_price: 590.40, price_change_percentage_24h: 2.1, image: 'https://assets.coincap.io/assets/icons/bnb@2x.png' },
-  { id: 'solana', symbol: 'sol', name: 'Solana', current_price: 145.60, price_change_percentage_24h: 5.4, image: 'https://assets.coincap.io/assets/icons/sol@2x.png' },
-  { id: 'xrp', symbol: 'xrp', name: 'XRP', current_price: 0.62, price_change_percentage_24h: -1.2, image: 'https://assets.coincap.io/assets/icons/xrp@2x.png' },
-  { id: 'usdc', symbol: 'usdc', name: 'USDC', current_price: 1.00, price_change_percentage_24h: 0.00, image: 'https://assets.coincap.io/assets/icons/usdc@2x.png' },
-  { id: 'cardano', symbol: 'ada', name: 'Cardano', current_price: 0.45, price_change_percentage_24h: -2.3, image: 'https://assets.coincap.io/assets/icons/ada@2x.png' },
-  { id: 'avalanche', symbol: 'avax', name: 'Avalanche', current_price: 35.20, price_change_percentage_24h: 4.1, image: 'https://assets.coincap.io/assets/icons/avax@2x.png' },
-  { id: 'dogecoin', symbol: 'doge', name: 'Dogecoin', current_price: 0.16, price_change_percentage_24h: 8.5, image: 'https://assets.coincap.io/assets/icons/doge@2x.png' }
-];
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import {
+  BarChart,
+  Bar,
+  Cell,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid
+} from "recharts";
 
 export default function Home() {
-  const [coins, setCoins] = useState(INITIAL_DATA);
-  const [search, setSearch] = useState('');
+  const [coins, setCoins] = useState([]);
+  const [search, setSearch] = useState("");
   const [favorites, setFavorites] = useState([]);
-  const [darkMode, setDarkMode] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [isDark, setIsDark] = useState(false);
 
-  // --- THEME LOGIC ---
+  /* ---------- THEME SYNC (CRITICAL FIX) ---------- */
   useEffect(() => {
-    // Check LocalStorage for saved theme
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-      setDarkMode(true);
-      document.documentElement.classList.add('dark');
-    }
+    const updateTheme = () =>
+      setIsDark(document.documentElement.classList.contains("dark"));
+
+    updateTheme();
+
+    const observer = new MutationObserver(updateTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"]
+    });
+
+    return () => observer.disconnect();
   }, []);
 
-  const toggleTheme = () => {
-    if (darkMode) {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-      setDarkMode(false);
-    } else {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-      setDarkMode(true);
-    }
-  };
-
-  // --- SIMULATOR ---
+  /* ---------- FETCH DATA ---------- */
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCoins(currentCoins => 
-        currentCoins.map(coin => {
-          const volatility = (Math.random() * 0.01) - 0.005; 
-          const newPrice = coin.current_price * (1 + volatility);
-          return {
-            ...coin,
-            current_price: newPrice,
-            price_change_percentage_24h: coin.price_change_percentage_24h + (volatility * 100)
-          };
-        })
-      );
-    }, 3000);
-    return () => clearInterval(interval);
+    fetch("/api/crypto")
+      .then(res => res.json())
+      .then(data => {
+        setCoins(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, []);
 
+  /* ---------- FAVORITES ---------- */
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('cryptoFavorites');
-      if (saved) setFavorites(JSON.parse(saved));
-    } catch (e) { console.log("Storage error"); }
+    const saved = localStorage.getItem("cryptoFavorites");
+    if (saved) setFavorites(JSON.parse(saved));
   }, []);
 
   const toggleFavorite = (id) => {
-    const updated = favorites.includes(id) 
-      ? favorites.filter(favId => favId !== id) 
+    const updated = favorites.includes(id)
+      ? favorites.filter(f => f !== id)
       : [...favorites, id];
     setFavorites(updated);
-    localStorage.setItem('cryptoFavorites', JSON.stringify(updated));
+    localStorage.setItem("cryptoFavorites", JSON.stringify(updated));
   };
 
-  const filteredCoins = coins.filter(coin =>
-    coin.name.toLowerCase().includes(search.toLowerCase())
+  const filteredCoins = coins.filter(c =>
+    c.name.toLowerCase().includes(search.toLowerCase())
   );
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-xl font-bold text-gray-400 bg-gray-50 dark:bg-gray-900">
+        Loading live crypto market…
+      </div>
+    );
+  }
+
+  /* ---------- THEME-SAFE COLORS ---------- */
+  const tooltipBg = isDark ? "#020617" : "#ffffff";
+  const tooltipText = isDark ? "#e5e7eb" : "#0f172a";
+  const tooltipBorder = isDark
+    ? "1px solid rgba(148,163,184,0.25)"
+    : "1px solid rgba(15,23,42,0.15)";
+
+  const cursorFill = isDark
+    ? "rgba(148,163,184,0.18)"
+    : "rgba(100,116,139,0.12)";
+
   return (
-    // ADDED: min-h-screen and dark background colors
-    <div className="min-h-screen p-10 font-sans transition-colors duration-300 bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100">
-
+    <div className="min-h-screen px-4 sm:px-6 py-12 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       <div className="max-w-5xl mx-auto">
-        <h1 className="text-4xl font-extrabold mb-2 text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
-          CryptoMarket Sim
+
+        {/* HEADER */}
+        <h1 className="text-3xl md:text-4xl font-extrabold leading-tight mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">
+          Crypto Dashboard
         </h1>
-        
-        <div className="text-center mb-6">
-          <span className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-xs font-bold px-3 py-1 rounded-full border border-blue-200 dark:border-blue-800">
-            ● Live Market Simulator
-          </span>
-        </div>
 
-        <div className="mb-8 mt-6">
-          <input 
-            type="text" 
-            placeholder="Search markets..." 
-            // ADDED: Dark mode styles for input
-            className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg w-full shadow-sm text-lg focus:ring-2 focus:ring-blue-500 outline-none transition bg-white dark:bg-gray-800 dark:text-white"
-            onChange={(e) => setSearch(e.target.value)} 
-          />
-        </div>
+        {/* SEARCH */}
+        <input
+          type="text"
+          placeholder="Search cryptocurrency…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="
+          mb-10 w-full p-3 sm:p-4 rounded-xl text-base md:text-lg
+          bg-white text-gray-900 border border-gray-400
+          shadow-sm outline-none
+          focus:ring-2 focus:ring-blue-500
+          caret-gray-900 focus:caret-gray-900
+          dark:bg-gray-800 dark:text-gray-100 dark:border-gray-600
+          dark:caret-gray-100 dark:focus:caret-gray-100
+          "
+        />
 
-        {/* CHART SECTION */}
-        {/* ADDED: Dark mode styles for card */}
-        <div className="mb-10 h-80 w-full bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700">
-          <h2 className="text-lg font-bold mb-4 text-gray-500 dark:text-gray-400 uppercase tracking-wider">Top Assets Performance</h2>
+        {/* BAR CHART */}
+        <div className="mb-12 h-80 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700">
+          <h2 className="text-xs tracking-wider font-semibold uppercase text-gray-500 dark:text-gray-400 mb-4">
+            24h Price Change (%)
+          </h2>
+
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart 
+            <BarChart
+              key={isDark ? "dark" : "light"}   // ⭐ FORCES CORRECT REPAINT
               data={filteredCoins.slice(0, 10)}
-              margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
             >
-              <CartesianGrid strokeDasharray="3 3" vertical={false} strokeOpacity={0.3} />
-              <XAxis 
-                dataKey="symbol" 
-                tickFormatter={(val) => val.toUpperCase()} 
-                tick={{fill: '#9ca3af', fontSize: 12}} 
+              <CartesianGrid strokeDasharray="3 3" vertical={false} strokeOpacity={0.2} />
+
+              <XAxis
+                dataKey="symbol"
+                tickFormatter={(v) => v.toUpperCase()}
+                tick={{ fill: isDark ? "#cbd5e1" : "#475569", fontSize: 12 }}
                 tickLine={false}
-                axisLine={{ stroke: '#374151' }}
               />
-              <YAxis hide={true}/>
-              <Tooltip 
-                cursor={{fill: 'rgba(255,255,255,0.1)'}}
+              <YAxis hide />
+
+              <Tooltip
+                cursor={{ fill: cursorFill }}
                 contentStyle={{
-                  borderRadius: '8px', 
-                  border: 'none', 
-                  backgroundColor: darkMode ? '#1f2937' : '#fff', // Smart Tooltip Color
-                  color: darkMode ? '#fff' : '#000',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                  backgroundColor: tooltipBg,
+                  color: tooltipText,
+                  borderRadius: "12px",
+                  border: tooltipBorder,
+                  boxShadow: "0 12px 30px rgba(0,0,0,0.25)"
                 }}
-                itemStyle={{ color: darkMode ? '#fff' : '#000' }}
-  labelStyle={{ color: darkMode ? '#fff' : '#000' }}
+                wrapperStyle={{ outline: "none" }}
+                itemStyle={{ color: tooltipText }}
+                labelStyle={{ color: isDark ? "#94a3b8" : "#475569" }}
               />
+
               <Bar dataKey="price_change_percentage_24h" radius={[4, 4, 4, 4]}>
-                {filteredCoins.slice(0, 10).map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.price_change_percentage_24h >= 0 ? '#22c55e' : '#ef4444'} />
+                {filteredCoins.slice(0, 10).map((coin, i) => (
+                  <Cell
+                    key={i}
+                    fill={coin.price_change_percentage_24h >= 0 ? "#22c55e" : "#ef4444"}
+                  />
                 ))}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
 
-        {/* LIST SECTION */}
+        {/* LIST */}
         <div className="grid grid-cols-1 gap-3">
-          {filteredCoins.map((coin) => (
-            <Link href={`/coin/${coin.id}`} key={coin.id}>
-              {/* ADDED: Dark mode styles for List Item */}
-              <div className="p-5 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl flex justify-between items-center shadow-sm hover:shadow-md hover:scale-[1.01] transition duration-200 cursor-pointer">
+          {filteredCoins.map(coin => (
+            <Link key={coin.id} href={`/coin/${coin.id}`}>
+              <div className="p-5 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700/70 rounded-xl flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 shadow-sm hover:shadow-lg dark:shadow-none dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.45)] transition-shadow duration-200 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/40">
                 <div className="flex items-center gap-4">
-                    <button 
-                    onClick={(e) => { e.preventDefault(); toggleFavorite(coin.id); }}
-                    className={`text-2xl transition ${favorites.includes(coin.id) ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600 hover:text-gray-400'}`}
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      toggleFavorite(coin.id);
+                    }}
+                    className={`text-2xl p-1 transition-colors duration-300${
+                      favorites.includes(coin.id)
+                        ? "text-yellow-400"
+                        : "text-gray-300 dark:text-gray-500 hover:text-gray-400 dark:hover:text-gray-400"
+                    }`}
                   >
-                    {favorites.includes(coin.id) ? '★' : '☆'}
+                    {favorites.includes(coin.id) ? "★" : "☆"}
                   </button>
-                  
-                  <img 
-                    src={coin.image} 
-                    alt={coin.name} 
-                    className="w-10 h-10 rounded-full bg-gray-50"
-                    onError={(e) => {e.target.src = 'https://assets.coincap.io/assets/icons/generic@2x.png'}} 
-                  />
+
+                  <img src={coin.image} alt={coin.name} className="w-10 h-10" />
                   <div>
-                    <h3 className="font-bold text-lg text-gray-900 dark:text-white">{coin.name}</h3>
-                    <span className="text-xs font-mono text-gray-400 uppercase">{coin.symbol}</span>
+                    <h3 className="font-bold">{coin.name}</h3>
+                    <span className="text-xs text-gray-400 uppercase">
+                      {coin.symbol}
+                    </span>
                   </div>
                 </div>
-                
-                <div className="text-right">
-                  <p className="font-bold text-lg text-gray-900 dark:text-white">${coin.current_price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
-                  <p className={`text-sm font-medium ${coin.price_change_percentage_24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                    {coin.price_change_percentage_24h >= 0 ? '▲' : '▼'} {Math.abs(coin.price_change_percentage_24h).toFixed(2)}%
+
+                <div className="text-left sm:text-right">
+                  <p className="font-bold text-base md:text-lg">
+                    ${coin.current_price.toLocaleString()}
+                  </p>
+                  <p className={`text-sm font-medium ${
+                    coin.price_change_percentage_24h >= 0
+                      ? "text-green-500"
+                      : "text-red-500"
+                  }`}>
+                    {coin.price_change_percentage_24h >= 0 ? "▲" : "▼"}{" "}
+                    {Math.abs(coin.price_change_percentage_24h).toFixed(2)}%
                   </p>
                 </div>
               </div>
             </Link>
           ))}
         </div>
+
       </div>
     </div>
   );

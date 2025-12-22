@@ -1,113 +1,229 @@
 "use client";
-import { useState, useEffect, use } from 'react';
-import Link from 'next/link';
-
-const COIN_DB = {
-  bitcoin: { name: "Bitcoin", symbol: "BTC", price: 64230.50, marketCap: 1200000000000, volume: 35000000000, change: 1.2, description: "Bitcoin is the first successful internet money based on peer-to-peer technology." },
-  ethereum: { name: "Ethereum", symbol: "ETH", price: 3450.12, marketCap: 400000000000, volume: 15000000000, change: -0.5, description: "Ethereum is a decentralized platform that runs smart contracts." },
-  tether: { name: "Tether", symbol: "USDT", price: 1.00, marketCap: 110000000000, volume: 45000000000, change: 0.01, description: "Tether is a stablecoin pegged to the US Dollar." },
-  bnb: { name: "BNB", symbol: "BNB", price: 590.40, marketCap: 87000000000, volume: 1200000000, change: 2.1, description: "BNB is the native token of the Binance ecosystem." },
-  solana: { name: "Solana", symbol: "SOL", price: 145.60, marketCap: 65000000000, volume: 2000000000, change: 5.4, description: "Solana is a high-performance blockchain supporting builders around the world." },
-  xrp: { name: "XRP", symbol: "XRP", price: 0.62, marketCap: 34000000000, volume: 1000000000, change: -1.2, description: "XRP is a digital asset built for payments." },
-  usdc: { name: "USDC", symbol: "USDC", price: 1.00, marketCap: 32000000000, volume: 3000000000, change: 0.00, description: "USDC is a fully reserved stablecoin." },
-  cardano: { name: "Cardano", symbol: "ADA", price: 0.45, marketCap: 16000000000, volume: 400000000, change: -2.3, description: "Cardano is a proof-of-stake blockchain platform." },
-  avalanche: { name: "Avalanche", symbol: "AVAX", price: 35.20, marketCap: 13000000000, volume: 600000000, change: 4.1, description: "Avalanche is an open, programmable smart contracts platform." },
-  dogecoin: { name: "Dogecoin", symbol: "DOGE", price: 0.16, marketCap: 23000000000, volume: 1800000000, change: 8.5, description: "Dogecoin is an open source peer-to-peer digital currency." }
-};
+import { useState, useEffect, use } from "react";
+import Link from "next/link";
+import {
+  AreaChart,
+  Area,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 export default function CoinDetail({ params }) {
-  const unwrappedParams = use(params);
-  const id = unwrappedParams.id;
-  const [coin, setCoin] = useState(null);
+  const { id } = use(params);
 
-  // 1. PERSIST DARK MODE: Check if we should be dark on load
+  const [coin, setCoin] = useState(null);
+  const [chartData, setChartData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isDark, setIsDark] = useState(false);
+
+  /* ---------- THEME SYNC (LIVE) ---------- */
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    const syncTheme = () => {
+      setIsDark(document.documentElement.classList.contains("dark"));
+    };
+    syncTheme();
+    const observer = new MutationObserver(syncTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    return () => observer.disconnect();
   }, []);
 
+  /* ---------- FETCH DATA ---------- */
   useEffect(() => {
-    const foundCoin = COIN_DB[id];
-    if (foundCoin) {
-      const volatility = (Math.random() * 0.02) - 0.01; 
-      const livePrice = foundCoin.price * (1 + volatility);
-      setCoin({
-        ...foundCoin,
-        priceUsd: livePrice,
-        change24: foundCoin.change,
-        vwap: livePrice * 0.98 
-      });
+    let active = true;
+
+    async function loadData() {
+      try {
+        const res = await fetch("/api/crypto");
+        const data = await res.json();
+        const found = data.find(c => c.id === id);
+
+        if (found && active) {
+          setCoin({
+            name: found.name,
+            symbol: found.symbol.toUpperCase(),
+            priceUsd: found.current_price,
+            change24: found.price_change_percentage_24h,
+            marketCap: found.market_cap,
+            volume: found.total_volume,
+            image: found.image,
+          });
+        }
+
+        const chartRes = await fetch(
+          `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=7`
+        );
+        const chartJson = await chartRes.json();
+
+        if (chartJson?.prices && active) {
+          setChartData(
+            chartJson.prices.map(p => ({
+              day: new Date(p[0]).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+              }),
+              price: p[1],
+            }))
+          );
+        }
+      } catch (e) {
+        console.error("Failed to load coin data");
+      } finally {
+        active && setLoading(false);
+      }
     }
+
+    loadData();
+    return () => (active = false);
   }, [id]);
 
-  if (!coin) return <div className="min-h-screen flex items-center justify-center text-xl font-bold text-gray-400 bg-gray-50 dark:bg-gray-900">Loading Market Data...</div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen p-10 bg-gray-50 dark:bg-gray-900">
+        <div className="max-w-4xl mx-auto">
+          <div className="h-40 bg-white dark:bg-gray-800 rounded-xl animate-pulse" />
+        </div>
+      </div>
+    );
+  }
 
   const isPositive = coin.change24 >= 0;
-  const sentiment = isPositive ? "Bullish (Buy Trend)" : "Bearish (Sell Pressure)";
+  const sentiment = isPositive
+    ? "Bullish (Buy Trend)"
+    : "Bearish (Sell Pressure)";
+
+  /* ---------- HIGH / LOW POINTS ---------- */
+  const prices = chartData.map(d => d.price);
+  const maxPrice = Math.max(...prices);
+  const minPrice = Math.min(...prices);
 
   return (
-    // 2. MAIN CONTAINER: Added dark backgrounds
     <div className="min-h-screen p-10 font-sans bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors duration-300">
       <div className="max-w-4xl mx-auto">
-        <Link href="/" className="text-gray-500 hover:text-black dark:hover:text-white mb-6 inline-flex items-center gap-2 font-medium transition">
+
+        <Link href="/" className="text-gray-500 hover:text-black dark:hover:text-white mb-6 inline-flex items-center gap-2 font-medium">
           ← Back to Live Dashboard
         </Link>
-        
-        {/* 3. CARD: Added dark background and border */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-100 dark:border-gray-700">
-          
-          {/* Header */}
-          <div className="p-8 border-b border-gray-100 dark:border-gray-700 flex justify-between items-start">
+
+        <div className="mb-10 bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-100 dark:border-gray-700">
+
+          {/* HEADER */}
+          <div className="p-6 md:p-8 border-b border-gray-100 dark:border-gray-700 flex justify-between items-start">
             <div className="flex items-center gap-6">
-              <img 
-                src={`https://assets.coincap.io/assets/icons/${coin.symbol.toLowerCase()}@2x.png`} 
-                alt={coin.name} 
-                className="w-16 h-16"
-                onError={(e) => {e.target.src = 'https://assets.coincap.io/assets/icons/generic@2x.png'}} 
-              />
+              <img src={coin.image} alt={coin.name} className="w-16 h-16" />
               <div>
-                <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">{coin.name}</h1>
-                <span className="text-xl text-gray-400 font-mono">{coin.symbol}</span>
+                <h1 className="text-3xl md:text-4xl font-extrabold">{coin.name}</h1>
+                <span className="text-gray-400 font-mono">{coin.symbol}</span>
               </div>
             </div>
+
             <div className="text-right">
-              <div className="text-4xl font-bold text-gray-900 dark:text-white">${coin.priceUsd.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
-              <div className={`text-lg font-medium mt-1 ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
-                {isPositive ? '▲' : '▼'} {Math.abs(coin.change24).toFixed(2)}% (24h)
+              <div className="text-3xl md:text-4xl font-extrabold">
+                ${coin.priceUsd.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              </div>
+              <div className={`text-lg ${isPositive ? "text-green-500" : "text-red-500"}`}>
+                {isPositive ? "▲" : "▼"} {Math.abs(coin.change24).toFixed(2)}%
               </div>
             </div>
           </div>
 
-          {/* AI Sentiment Box */}
-          <div className="p-8 bg-gray-50 dark:bg-gray-900 border-b border-gray-100 dark:border-gray-700">
-             <div className={`p-4 rounded-lg border border-dashed ${isPositive ? 'border-green-300 bg-green-50 dark:bg-green-900/20' : 'border-red-300 bg-red-50 dark:bg-red-900/20'}`}>
-                <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">Market Sentiment</h3>
-                <p className={`text-2xl font-bold ${isPositive ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
-                  {sentiment}
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
-                  Technical indicators suggest {isPositive ? 'buying volume is increasing' : 'selling pressure is high'} based on simulated market depth.
-                </p>
-             </div>
+          {/* PRICE TREND */}
+          <div className="p-6 md:p-8 border-b border-gray-100 dark:border-gray-700">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-4">
+              7 Day Price Trend
+            </h3>
+
+            <div className="h-40">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData}>
+                  <defs>
+                    <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={isDark ? 0.5 : 0.7} />
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+
+                  {/* CROSSHAIR + SMOOTH TOOLTIP */}
+                  <Tooltip
+                    isAnimationActive
+                    animationDuration={250}
+                    cursor={{
+                      stroke: isDark ? "#334155" : "#94a3b8",
+                      strokeDasharray: "3 3",
+                    }}
+                    contentStyle={{
+                      backgroundColor: isDark ? "#020617" : "#f8fafc",
+                      color: isDark ? "#e5e7eb" : "#111827",
+                      borderRadius: "10px",
+                      border: "1px solid",
+                      borderColor: isDark ? "#1e293b" : "#e5e7eb",
+                      boxShadow: isDark
+                        ? "0 10px 30px rgba(0,0,0,0.6)"
+                        : "0 10px 30px rgba(0,0,0,0.15)",
+                    }}
+                    labelFormatter={(_, payload) =>
+                      payload?.[0]?.payload?.day || ""
+                    }
+                    formatter={(v) => [`$${v.toFixed(2)}`, "Price"]}
+                  />
+
+                  <Area
+                    type="monotone"
+                    dataKey="price"
+                    stroke="#3b82f6"
+                    strokeWidth={2}
+                    fill="url(#priceGradient)"
+                    dot={({ cx, cy, payload }) =>
+                      payload.price === maxPrice || payload.price === minPrice ? (
+                        <circle
+                          cx={cx}
+                          cy={cy}
+                          r={5}
+                          fill={payload.price === maxPrice ? "#22c55e" : "#ef4444"}
+                          stroke="#fff"
+                          strokeWidth={2}
+                        />
+                      ) : null
+                    }
+                    activeDot={{ r: 6 }}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           </div>
 
-          {/* Metrics Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-gray-100 dark:bg-gray-700">
-            {/* FIX: Changed dark:hover:bg-gray-750 to dark:hover:bg-gray-700 */}
-            <div className="bg-white dark:bg-gray-800 p-8 hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-200">
-              <p className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">Market Cap</p>
-              <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">${(coin.marketCap / 1e9).toFixed(2)} Billion</p>
-            </div>
-            
-            <div className="bg-white dark:bg-gray-800 p-8 hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-200">
-              <p className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">Volume (24h)</p>
-              <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">${(coin.volume / 1e9).toFixed(2)} Billion</p>
+          {/* SENTIMENT */}
+          <div className="p-6 md:p-8 bg-gray-50 dark:bg-gray-900 border-b border-gray-100 dark:border-gray-700">
+            <div className={`p-4 rounded-lg border border-dashed ${
+              isPositive
+                ? "border-green-300 bg-green-50 dark:bg-green-900/20"
+                : "border-red-300 bg-red-50 dark:bg-red-900/20"
+            }`}>
+              <h3 className="text-sm uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                Market Sentiment
+              </h3>
+              <p className={`text-2xl font-bold ${
+                isPositive ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400"
+              }`}>
+                {sentiment}
+              </p>
             </div>
           </div>
+
+          {/* METRICS */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-gray-100 dark:bg-gray-700">
+            <div className="bg-white dark:bg-gray-800 p-6">
+              <p className="text-sm text-gray-400 uppercase">Market Cap</p>
+              <p className="text-2xl font-bold">${(coin.marketCap / 1e9).toFixed(2)}B</p>
+            </div>
+            <div className="bg-white dark:bg-gray-800 p-6">
+              <p className="text-sm text-gray-400 uppercase">Volume (24h)</p>
+              <p className="text-2xl font-bold">${(coin.volume / 1e9).toFixed(2)}B</p>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
