@@ -7,12 +7,12 @@ const CURRENCIES = ["USD", "EUR", "GBP", "JPY", "INR", "AUD", "CAD", "CHF", "CNY
 export default function Forex() {
   const [rates, setRates] = useState([]);
   const [isDark, setIsDark] = useState(false);
-
+  
   const [amount, setAmount] = useState("1");
   const [fromCur, setFromCur] = useState("USD");
   const [toCur, setToCur] = useState("INR");
   const [result, setResult] = useState(0);
-
+  
   /* ---------------- THEME LISTENER ---------------- */
   useEffect(() => {
     const checkTheme = () =>

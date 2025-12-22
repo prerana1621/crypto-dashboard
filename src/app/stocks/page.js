@@ -13,7 +13,6 @@ import {
   Pie,
   Cell
 } from "recharts";
-
 const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
 
 export default function Stocks() {
@@ -21,16 +20,16 @@ export default function Stocks() {
   const [loading, setLoading] = useState(true);
   const [isDark, setIsDark] = useState(false);
   // 📊 Market Insights
-const avgPrice =
+  const avgPrice =
   stocks.reduce((sum, s) => sum + s.price, 0) / (stocks.length || 1);
-
-const topGainer = [...stocks].sort((a, b) => b.change - a.change)[0];
-const topLoser = [...stocks].sort((a, b) => a.change - b.change)[0];
-const trendConfidence = Math.min(
-  100,
-  Math.abs(stocks.reduce((s, a) => s + a.change, 0))
-).toFixed(0);
-
+  
+  const topGainer = [...stocks].sort((a, b) => b.change - a.change)[0];
+  const topLoser = [...stocks].sort((a, b) => a.change - b.change)[0];
+  const trendConfidence = Math.min(
+    100,
+    Math.abs(stocks.reduce((s, a) => s + a.change, 0))
+  ).toFixed(0);
+  
   // Detect dark mode from html class
   useEffect(() => {
     const checkTheme = () =>

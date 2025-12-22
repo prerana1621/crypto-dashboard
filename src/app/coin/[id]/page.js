@@ -10,12 +10,12 @@ import {
 
 export default function CoinDetail({ params }) {
   const { id } = use(params);
-
+  
   const [coin, setCoin] = useState(null);
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isDark, setIsDark] = useState(false);
-
+  
   /* ---------- THEME SYNC (LIVE) ---------- */
   useEffect(() => {
     const syncTheme = () => {

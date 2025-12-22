@@ -11,15 +11,15 @@ import {
 } from "recharts";
 
 export default function StockDetail({ params }) {
-  const { id } = use(params);
-
-  const [stock, setStock] = useState(null);
-  const [candles, setCandles] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [isDark, setIsDark] = useState(false);
-  const [error, setError] = useState(null);
-
-  /* ---------- THEME SYNC ---------- */
+    const { id } = use(params);
+    
+    const [stock, setStock] = useState(null);
+    const [candles, setCandles] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [isDark, setIsDark] = useState(false);
+    const [error, setError] = useState(null);
+    
+    /* ---------- THEME SYNC ---------- */
   useEffect(() => {
     const sync = () =>
       setIsDark(document.documentElement.classList.contains("dark"));
