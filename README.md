@@ -1,36 +1,196 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🚀 FinHub — Crypto, Stocks & Forex Dashboard
 
-## Getting Started
+![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
+![Firebase](https://img.shields.io/badge/Firebase-Auth%20%26%20Firestore-FFCA28?logo=firebase&logoColor=black)
+![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-v4-38B2AC?logo=tailwind-css&logoColor=white)
+![Recharts](https://img.shields.io/badge/Recharts-Data%20Visualization-8884d8)
+![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?logo=vercel)
 
-First, run the development server:
+![Status](https://img.shields.io/badge/Status-Production%20Ready-success)
+![License](https://img.shields.io/badge/License-MIT-blue)
 
+FinHub is a modern, full-stack financial dashboard built using **Next.js App Router**.  
+It provides real-time insights into **cryptocurrency markets**, **stock prices**, and **forex exchange rates**, combined with secure authentication, role-based access, and interactive data visualizations.
+
+🌐 **Live Demo:** https://crypto-dashboard-rho-seven.vercel.app/
+
+---
+
+## ✨ Features
+
+### 🔐 Authentication & Authorization
+- Firebase Authentication (Email & Password)
+- Email verification & password reset
+- Role-based access (`user` / `admin`)
+- Protected routes with automatic redirects
+
+### 📊 Market Dashboards
+
+#### 🪙 Cryptocurrency Dashboard
+- Live crypto prices using CoinGecko API
+- 24-hour price change bar chart
+- Favorite coins system (local storage)
+- Detailed coin pages with 7-day price trend analysis
+
+#### 📈 Stock Market Dashboard
+- Live US stock prices via Stooq API
+- Market insights: average price, top gainer & loser
+- OHLC (candlestick-style) price visualization
+- Individual stock detail pages with analytics
+
+#### 💱 Forex Dashboard
+- Real-time exchange rates using Frankfurter API
+- Smart currency converter
+- USD strength index visualization
+- Clean, intuitive UI
+
+### 🛠 Admin Panel
+- Admin-only access
+- View registered users from Firestore
+- User role display
+- System status indicators
+
+### 🎨 UI & UX
+- Fully responsive layout
+- Dark / Light mode toggle (persistent)
+- Smooth transitions and animations
+- Interactive charts using Recharts
+- Tailwind CSS v4 styling
+
+---
+
+## 🧱 Tech Stack
+
+| Layer | Technology |
+|------|-----------|
+| Frontend | Next.js 16 (App Router), React 19 |
+| Styling | Tailwind CSS v4 |
+| Charts | Recharts |
+| Authentication | Firebase Authentication |
+| Database | Firebase Firestore |
+| APIs | CoinGecko, Stooq, Frankfurter |
+| Deployment | Vercel |
+
+---
+
+## 📁 Project Structure
+
+```text
+src/
+├── app/
+│   ├── api/
+│   │   ├── crypto/
+│   │   ├── stocks/
+│   │   ├── forex/
+│   │   └── ohlc/
+│   ├── login/
+│   ├── admin/
+│   ├── coin/[id]/
+│   ├── stocks/[id]/
+│   ├── forex/
+│   ├── layout.js
+│   └── page.js
+│
+├── components/
+│   └── ClientLayout.js
+│
+├── context/
+│   └── AuthContext.js
+│
+├── lib/
+│   ├── firebase.js
+│   └── auth.js
+│
+└── globals.css
+```
+---
+## ⚙️ Installation & Setup
+
+### 1️⃣ Clone the Repository
+```bash
+git clone https://github.com/prerana1621/crypto-dashboard.git
+cd crypto-dashboard
+```
+### 2️⃣ Install Dependencies
+```bash
+npm install
+```
+### 3️⃣ Firebase Configuration
+Update src/lib/firebase.js with your Firebase project credentials:
+```js
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+};
+```
+**Enable the following in Firebase Console:**
+- Email / Password Authentication
+- Firestore Database
+- Email Verification
+### 4️⃣ Run the Development Server
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+Open http://localhost:3000 in your browser.
+
+---
+## 🔒 Role-Based Access Control
+
+The application implements a secure RBAC system using **Firebase Firestore**.
+
+| Role | Permissions |
+| :--- | :--- |
+| **User** | Access Crypto, Stocks & Forex dashboards |
+| **Admin** | All user features + **Admin Panel** (User management, System status) |
+
+**Note:** Admin roles are stored in the Firestore `users` collection:
+
+```json
+{
+  "role": "admin"
+}
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
+## 📦 API Endpoints
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+| Endpoint | Description |
+| :--- | :--- |
+| `/api/crypto` | Fetch top cryptocurrencies |
+| `/api/stocks` | Fetch live stock prices |
+| `/api/ohlc?id=AAPL` | Fetch OHLC stock data |
+| `/api/forex` | Fetch forex exchange rates |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
+## 🚀 Deployment
+This project is optimized for **Vercel** deployment.
+```bash
+npm run build
+npm run start
+```
+Push the repository to GitHub and deploy directly from the **Vercel Dashboard**.
 
-## Learn More
+---
+## 🧠 Future Enhancements
+- Real-time WebSocket updates
+- Firestore-based watchlists
+- Technical indicators (RSI, MACD)
+- Market news integration
+- Portfolio simulation
+- Progressive Web App (PWA) support
 
-To learn more about Next.js, take a look at the following resources:
+---
+## 👩‍💻 Author
+Prerana Acharyya
+Full-Stack Developer
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+GitHub: https://github.com/prerana1621
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+## ⭐ Support
+If you find this project helpful:
+- ⭐ Star the repository
+- 🍴 Fork and improve it
+- 💬 Share feedback
