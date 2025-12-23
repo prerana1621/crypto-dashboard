@@ -142,9 +142,19 @@ export default function ClientLayout({ children }) {
             <Link href="/stocks" className="font-medium text-sm">Stocks</Link>
             <Link href="/forex" className="font-medium text-sm">Forex</Link>
             
-            {role === "admin" && (
-              <Link href="/admin" className="font-bold text-sm text-red-500">Admin</Link>
-            )}
+            {/* ADMIN LINK - Only visible if role is 'admin' */}
+{role === "admin" && (
+  <Link 
+    href="/admin" 
+    className={`font-bold transition-colors ${
+      pathname === "/admin" 
+        ? "text-red-600 dark:text-red-400" 
+        : "text-red-500 hover:text-red-700"
+    }`}
+  >
+    Admin Panel 🛡️
+  </Link>
+)}
             
             {user && (
               <button onClick={handleSignOut} className="text-sm font-bold text-red-500">Exit</button>

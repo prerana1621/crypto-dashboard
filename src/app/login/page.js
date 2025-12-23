@@ -107,6 +107,8 @@ export default function Login() {
           <div className="rounded-lg border border-gray-300 dark:border-white/10 bg-gray-50 dark:bg-[#0b1220] focus-within:ring-2 focus-within:ring-blue-500">
             <input
               type="email"
+              name="email"
+              autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email"
@@ -118,9 +120,11 @@ export default function Login() {
           <div className="rounded-lg border border-gray-300 dark:border-white/10 bg-gray-50 dark:bg-[#0b1220] focus-within:ring-2 focus-within:ring-blue-500">
             <input
               type="password"
+              name="password"
+              value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
-              autoComplete="new-password"
+              autoComplete="current-password"
               className="custom-caret w-full p-3 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 outline-none"
             />
           </div>
