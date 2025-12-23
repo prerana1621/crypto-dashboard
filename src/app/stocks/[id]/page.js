@@ -215,7 +215,6 @@ export default function StockDetail({ params }) {
             </div>
           </div>
 
-          {/* FUNDAMENTALS */}
           <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div className="flex justify-between border-b pb-2">
               <span className="text-gray-400">Market Cap</span>

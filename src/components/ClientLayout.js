@@ -14,7 +14,6 @@ export default function ClientLayout({ children }) {
   
   const [darkMode, setDarkMode] = useState(false);
 
-  // Sync state with the actual class on mount
   useEffect(() => {
     if (document.documentElement.classList.contains("dark")) {
       setDarkMode(true);
@@ -49,23 +48,17 @@ export default function ClientLayout({ children }) {
   /* ---------- SIGN OUT ---------- */
   const handleSignOut = async () => {
     try {
-      // REMOVED: document.body.style.pointerEvents = "none"; 
-      // This was causing the "freeze" on the login page.
       
       await signOut(auth);
-      // The useEffect above will handle the redirect to /login automatically
-      // once 'user' becomes null.
     } catch (error) {
       console.error("Sign out error", error);
     }
   };
 
-  // IF ON LOGIN PAGE: Render children only (No Navbar, No Theme Button)
   if (pathname === "/login") {
     return <main>{children}</main>;
   }
 
-  // ELSE: Render Dashboard (Navbar + Content)
   return (
     <>
       {/* THEME BUTTON */}
@@ -81,7 +74,6 @@ export default function ClientLayout({ children }) {
       <nav className="sticky top-0 z-40 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
         <div className="max-w-6xl mx-auto px-4">
           
-          {/* GRID LAYOUT: Keeps content centered perfectly */}
           <div className="grid grid-cols-3 h-16 items-center">
             
             {/* COL 1: BRAND (Align Left) */}
@@ -110,13 +102,13 @@ export default function ClientLayout({ children }) {
             {/* COL 2: LINKS (Align Center) */}
             <div className="hidden md:flex justify-center space-x-8">
               <Link href="/" className={`font-medium transition-colors ${pathname === "/" ? "text-blue-600 dark:text-blue-400" : "text-gray-600 dark:text-gray-400 hover:text-blue-500"}`}>
-                Crypto ₿
+                Crypto 
               </Link>
               <Link href="/stocks" className={`font-medium transition-colors ${pathname === "/stocks" ? "text-blue-600 dark:text-blue-400" : "text-gray-600 dark:text-gray-400 hover:text-blue-500"}`}>
-                Stocks 📈
+                Stocks 
               </Link>
               <Link href="/forex" className={`font-medium transition-colors ${pathname === "/forex" ? "text-blue-600 dark:text-blue-400" : "text-gray-600 dark:text-gray-400 hover:text-blue-500"}`}>
-                Forex 🌍
+                Forex 
               </Link>
             </div>
 
@@ -152,7 +144,7 @@ export default function ClientLayout({ children }) {
         : "text-red-500 hover:text-red-700"
     }`}
   >
-    Admin Panel 🛡️
+    Admin Panel 
   </Link>
 )}
             

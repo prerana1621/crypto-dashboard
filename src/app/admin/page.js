@@ -3,15 +3,15 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { db } from "@/lib/firebase"; // Import database
-import { collection, getDocs } from "firebase/firestore"; // Import firestore functions
+import { db } from "@/lib/firebase"; 
+import { collection, getDocs } from "firebase/firestore"; 
 
 export default function AdminPage() {
   const { user, role, loading } = useAuth();
   const router = useRouter();
   
   const [isAdmin, setIsAdmin] = useState(false);
-  const [usersList, setUsersList] = useState([]); // State to store real users
+  const [usersList, setUsersList] = useState([]); 
   const [fetchingUsers, setFetchingUsers] = useState(true);
 
   // 1. Check Admin Status
@@ -73,7 +73,7 @@ export default function AdminPage() {
         <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
           <div>
             <h1 className="text-4xl font-extrabold flex items-center gap-3">
-              Admin Dashboard <span className="text-2xl">🛡️</span>
+              Admin Dashboard <span className="text-2xl"></span>
             </h1>
             <p className="text-gray-500 mt-2">Manage your users and system settings.</p>
           </div>

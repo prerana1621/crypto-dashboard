@@ -5,7 +5,7 @@ export async function GET() {
     const res = await fetch(
       "https://api.frankfurter.app/latest?from=USD",
       {
-        next: { revalidate: 300 } // cache 5 minutes
+        next: { revalidate: 300 } 
       }
     );
 

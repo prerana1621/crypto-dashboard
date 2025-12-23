@@ -46,7 +46,6 @@ export default function Home() {
       .catch(() => setLoading(false));
   }, []);
 
-  /* ---------- FAVORITES ---------- */
   useEffect(() => {
     const saved = localStorage.getItem("cryptoFavorites");
     if (saved) setFavorites(JSON.parse(saved));
@@ -233,9 +232,9 @@ className="
                       : "text-red-500 dark:text-red-400"
                   }`}>
                     {coin.price_change_percentage_24h >= 0 ? (
-                      <span className="text-[10px]">▲</span> // UP TRIANGLE
+                      <span className="text-[10px]">▲</span> 
                     ) : (
-                      <span className="text-[10px]">▼</span> // DOWN TRIANGLE
+                      <span className="text-[10px]">▼</span> 
                     )}
                     {Math.abs(coin.price_change_percentage_24h).toFixed(2)}%
                   </p>

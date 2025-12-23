@@ -22,7 +22,7 @@ function parseStooqCSV(csv) {
 
 export async function GET() {
   try {
-    console.log("✅ /api/stocks called");
+    console.log("/api/stocks called");
 
     const stocks = [
       { id: "aapl", symbol: "AAPL.US", name: "Apple Inc." },
@@ -35,7 +35,7 @@ export async function GET() {
     for (const stock of stocks) {
       const res = await fetch(
         `https://stooq.com/q/l/?s=${stock.symbol.toLowerCase()}&i=d`,
-        { cache: "no-store" } // disable cache while testing
+        { cache: "no-store" } 
       );
 
       const csv = await res.text();

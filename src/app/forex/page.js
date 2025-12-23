@@ -84,7 +84,7 @@ export default function Forex() {
     setToCur(newTo);
   };
 
-  // 🔥 Normalize prices for color strength
+  // Normalize prices for color strength
   const prices = rates.map((r) => r.price);
   const maxPrice = Math.max(...prices);
   const minPrice = Math.min(...prices);
@@ -97,7 +97,7 @@ export default function Forex() {
   return (
     <div className="p-8 max-w-6xl mx-auto font-sans">
       <h1 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
-        Global Forex Markets 🌍
+        Global Forex Markets 
       </h1>
 
       {/* CONVERTER SECTION */}
@@ -146,7 +146,6 @@ export default function Forex() {
             </div>
           </div>
 
-          {/* ARROW ICON */}
           <div className="pb-4 text-white/60">
             <svg className="w-6 h-6 transform md:rotate-0 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
           </div>
@@ -183,7 +182,7 @@ export default function Forex() {
              <div /> 
              
              <div className="text-right pt-1">
-                <span className="text-xl font-bold tracking-tight text-white">
+                <span className="text-2xl font-bold tracking-tight text-white">
                   {result.toFixed(2)}
                 </span>
                 <span className="text-sm font-medium ml-2 text-white/80">
@@ -225,7 +224,6 @@ export default function Forex() {
                   {rate.price.toFixed(4)}
                 </div>
                 
-                {/* Animated 'Live' text */}
                 <div className="flex items-center justify-end gap-1.5 mt-1.5 animate-pulse">
                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_4px_rgba(34,197,94,0.6)]" />
                    <span className="text-[10px] font-bold text-green-500 uppercase tracking-wide">
@@ -237,10 +235,8 @@ export default function Forex() {
           ))}
         </div>
 
-        {/* CHART: USD STRENGTH INDEX */}
         <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700">
           
-          {/* 2. Updated Bold Header */}
           <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-6">
             USD Strength Index
           </h3>

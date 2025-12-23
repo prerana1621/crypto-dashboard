@@ -22,7 +22,6 @@ export default function Stocks() {
   const [loading, setLoading] = useState(true);
   const [isDark, setIsDark] = useState(false);
 
-  // 📊 Market Insights
   const avgPrice =
     stocks.reduce((sum, s) => sum + s.price, 0) / (stocks.length || 1);
 
@@ -33,7 +32,6 @@ export default function Stocks() {
     Math.abs(stocks.reduce((s, a) => s + a.change, 0))
   ).toFixed(0);
 
-  // Detect dark mode from html class
   useEffect(() => {
     const checkTheme = () =>
       setIsDark(document.documentElement.classList.contains("dark"));
@@ -70,7 +68,7 @@ export default function Stocks() {
   return (
     <div className="p-8 max-w-6xl mx-auto font-sans">
       <h1 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
-        Wall Street Simulator 🏙️
+        Wall Street Simulator 
       </h1>
 
       {/* MARKET INSIGHTS */}
@@ -117,7 +115,7 @@ export default function Stocks() {
                 allowDuplicatedCategory={false}
                 minTickGap={0}
                 interval={0}
-                tickFormatter={(value) => value} // force render text
+                tickFormatter={(value) => value} 
                 angle={-45}
                 textAnchor="end"
                 height={60}
@@ -207,7 +205,6 @@ export default function Stocks() {
           <Link key={stock.id} href={`/stocks/${stock.id}`}>
             <div className="bg-white dark:bg-gray-800 p-5 rounded-xl border shadow cursor-pointer hover:shadow-lg transition-all duration-200">
               
-              {/* HEADER ROW: Symbol/Name LEFT, Change Badge RIGHT */}
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h3 className="font-bold text-lg text-gray-900 dark:text-white">
@@ -218,7 +215,6 @@ export default function Stocks() {
                   </p>
                 </div>
                 
-                {/* THE BOXED BADGE */}
                 <div
                   className={`px-2 py-1 rounded-lg text-sm font-bold ${
                     stock.change >= 0
@@ -231,7 +227,6 @@ export default function Stocks() {
                 </div>
               </div>
 
-              {/* PRICE AT BOTTOM */}
               <div className="text-3xl font-bold text-gray-900 dark:text-white">
                 ${stock.price.toFixed(2)}
               </div>

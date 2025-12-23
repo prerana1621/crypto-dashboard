@@ -22,7 +22,6 @@ export default function Login() {
   const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&]).{6,}$/;
 
   useEffect(() => {
-    // Only access localStorage after component mounts (client-side)
     const savedEmail = localStorage.getItem("rememberEmail");
     if (savedEmail) {
       setEmail(savedEmail);

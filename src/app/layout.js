@@ -11,7 +11,6 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Script to prevent theme flash */}
         <script
           dangerouslySetInnerHTML={{
             __html: `

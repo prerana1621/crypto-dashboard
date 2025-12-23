@@ -5,7 +5,6 @@ export async function GET(req) {
     const { searchParams } = new URL(req.url);
     const symbol = (searchParams.get("id") || "AAPL").toUpperCase();
 
-    // Stooq format: aapl.us
     const stooqSymbol = `${symbol}.us`;
 
     const url = `https://stooq.com/q/d/l/?s=${stooqSymbol}&i=d`;
@@ -24,7 +23,6 @@ export async function GET(req) {
     const csv = await res.text();
     const lines = csv.trim().split("\n");
 
-    // CSV headers: Date,Open,High,Low,Close,Volume
     const data = lines.slice(-8).slice(0, 7).map(line => {
       const [date, open, high, low, close] = line.split(",");
 
