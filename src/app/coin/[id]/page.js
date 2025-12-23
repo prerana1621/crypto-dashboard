@@ -100,7 +100,16 @@ export default function CoinDetail({ params }) {
   const minPrice = Math.min(...prices);
 
   return (
-    <div className="min-h-screen p-10 font-sans bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors duration-300">
+    <div
+  className="
+    min-h-screen pt-10
+    bg-gradient-to-b
+    from-slate-50 to-white
+    dark:from-[#020617] dark:to-[#020617]
+    text-gray-900 dark:text-gray-100
+  "
+>
+
       <div className="max-w-4xl mx-auto">
 
         <Link href="/" className="text-gray-500 hover:text-black dark:hover:text-white mb-6 inline-flex items-center gap-2 font-medium">

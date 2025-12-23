@@ -84,7 +84,16 @@ export default function StockDetail({ params }) {
   const isPositive = stock.change >= 0;
 
   return (
-    <div className="min-h-screen p-10 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100">
+    <div
+  className="
+    min-h-screen
+    bg-gradient-to-b
+    from-slate-50 to-white
+    dark:from-[#020617] dark:to-[#020617]
+    text-gray-900 dark:text-gray-100
+  "
+>
+
       <div className="max-w-4xl mx-auto">
 
         <Link
@@ -196,7 +205,7 @@ export default function StockDetail({ params }) {
                           width={width}
                           height={Math.max(height, 1)}
                           fill={payload.up ? upColor : downColor}
-                          rx={1}
+                          rx={6}
                         />
                       );
                     }}
