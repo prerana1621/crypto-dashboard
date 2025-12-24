@@ -1,14 +1,18 @@
 # 🚀 FinHub — Crypto, Stocks & Forex Dashboard
 
-![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
-![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
-![Firebase](https://img.shields.io/badge/Firebase-Auth%20%26%20Firestore-FFCA28?logo=firebase&logoColor=black)
-![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-v4-38B2AC?logo=tailwind-css&logoColor=white)
-![Recharts](https://img.shields.io/badge/Recharts-Data%20Visualization-8884d8)
-![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?logo=vercel)
+<p align="center">
+  <img src="https://img.shields.io/badge/Next.js-16-black?logo=next.js" />
+  <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black" />
+  <img src="https://img.shields.io/badge/Firebase-Auth%20%26%20Firestore-FFCA28?logo=firebase&logoColor=black" />
+  <img src="https://img.shields.io/badge/TailwindCSS-v4-38B2AC?logo=tailwind-css&logoColor=white" />
+  <img src="https://img.shields.io/badge/Recharts-Data%20Visualization-8884d8" />
+  <img src="https://img.shields.io/badge/Deployed%20on-Vercel-black?logo=vercel" />
+</p>
 
-![Status](https://img.shields.io/badge/Status-Production%20Ready-success)
-![License](https://img.shields.io/badge/License-MIT-blue)
+<p align="center">
+  <img src="https://img.shields.io/badge/Status-Production%20Ready-success" />
+  <img src="https://img.shields.io/badge/License-MIT-blue" />
+</p>
 
 FinHub is a modern, full-stack financial dashboard built using **Next.js App Router**.  
 It provides real-time insights into **cryptocurrency markets**, **stock prices**, and **forex exchange rates**, combined with secure authentication, role-based access, and interactive data visualizations.
@@ -184,6 +188,7 @@ Push the repository to GitHub and deploy directly from the **Vercel Dashboard**.
 ---
 ## 👩‍💻 Author
 Prerana Acharyya
+
 Full-Stack Developer
 
 GitHub: https://github.com/prerana1621
