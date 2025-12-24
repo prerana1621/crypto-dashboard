@@ -1,17 +1,31 @@
 # 🚀 FinHub — Crypto, Stocks & Forex Dashboard
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Next.js-16-black?logo=next.js" />
+  <img src="https://img.shields.io/badge/Next.js-16%20(App%20Router)-black?logo=next.js" />
   <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black" />
-  <img src="https://img.shields.io/badge/Firebase-Auth%20%26%20Firestore-FFCA28?logo=firebase&logoColor=black" />
+  <img src="https://img.shields.io/badge/Node.js-Serverless-339933?logo=node.js&logoColor=white" />
   <img src="https://img.shields.io/badge/TailwindCSS-v4-38B2AC?logo=tailwind-css&logoColor=white" />
-  <img src="https://img.shields.io/badge/Recharts-Data%20Visualization-8884d8" />
-  <img src="https://img.shields.io/badge/Deployed%20on-Vercel-black?logo=vercel" />
+  <img src="https://img.shields.io/badge/Recharts-Interactive%20Charts-8884d8" />
+  <img src="https://img.shields.io/badge/Dark%20Mode-Supported-111827" />
+  <img src="https://img.shields.io/badge/Responsive-Mobile%20Ready-success" />
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Status-Production%20Ready-success" />
-  <img src="https://img.shields.io/badge/License-MIT-blue" />
+  <img src="https://img.shields.io/badge/Firebase-Authentication-FFCA28?logo=firebase&logoColor=black" />
+  <img src="https://img.shields.io/badge/Firestore-Database-orange" />
+  <img src="https://img.shields.io/badge/Role--Based%20Access-Controlled-critical" />
+  <img src="https://img.shields.io/badge/Protected%20Routes-Enabled-success" />
+  <img src="https://img.shields.io/badge/App%20Router-Next.js%2016-black" />
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/API-CoinGecko-green" />
+  <img src="https://img.shields.io/badge/API-Stooq-blue" />
+  <img src="https://img.shields.io/badge/API-Frankfurter-orange" />
+  <img src="https://img.shields.io/badge/Real--Time%20Market%20Data-Yes-success" />
+  <img src="https://img.shields.io/badge/ESLint-Enabled-4B32C3?logo=eslint" />
+  <img src="https://img.shields.io/badge/Deployed%20on-Vercel-black?logo=vercel" />
+  <img src="https://img.shields.io/badge/Production--Ready-Yes-success" />
 </p>
 
 FinHub is a modern, full-stack financial dashboard built using **Next.js App Router**.  
