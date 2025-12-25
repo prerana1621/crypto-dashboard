@@ -105,7 +105,7 @@ export default function Forex() {
         
         {/* Header */}
         <h2 className="text-lg font-bold mb-6 flex items-center gap-2">
-           <span className="opacity-80">💱</span> Quick Converter
+          Quick Converter
         </h2>
 
         <div className="flex flex-col md:flex-row items-end gap-4">
